@@ -1286,7 +1286,8 @@ app_angular.controller('sessionController',['bootbox','Conexion','$scope','$loca
                             "','"+DATOS_ENTIDADES_SINCRONIZACION[i][j].fechacreacion+
                             "','"+DATOS_ENTIDADES_SINCRONIZACION[i][j].usuariomodificacion+
                             "','"+DATOS_ENTIDADES_SINCRONIZACION[i][j].fechacreacion+
-                            "','"+DATOS_ENTIDADES_SINCRONIZACION[i][j].fechamodificacion+"' "; 
+                            "','"+DATOS_ENTIDADES_SINCRONIZACION[i][j].fechamodificacion+
+                            "','"+DATOS_ENTIDADES_SINCRONIZACION[i][j].rgba+"' "; 
                             if (contador==499) {
                                 CRUD.Updatedynamic(stringSentencia)
                                 NewQuery=true;

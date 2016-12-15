@@ -7,6 +7,8 @@ var app_angular = angular.module('PedidosOnline');
 //CONTROLADOR DEL MOULO DE VENTAS
 app_angular.controller("pedidoController",['Conexion','$scope','$location','$http','$routeParams','$timeout',function (Conexion,$scope,$location,$http,$routeParams,$timeout) {
 	$scope.ColorMasivo=[];
+	$scope.ColorMasivoAnterior=[];
+	$scope.tallasAnteriores=[];
 	$scope.itemDisabled=false;
 	$scope.colorDisabled=false;
 	$scope.validaciones;
@@ -127,10 +129,17 @@ app_angular.controller("pedidoController",['Conexion','$scope','$location','$htt
 						$scope.tallas[i].multiplo--;
 					}else{
 						$scope.tallas[i].cantidad-=1;	
+
 						$scope.tallas[i].multiplo--;
 					}
 					$scope.cantidadrefererencia+=$scope.tallas[i].cantidad;
-					$scope.tallas[i].estadoextension2=2;
+					if ($scope.tallas[i].cantidad==0) {
+						$scope.tallas[i].estadoextension2=3;
+					}else
+					{
+						$scope.tallas[i].estadoextension2=2;	
+					}
+					
 				}
 			
 			}
@@ -399,7 +408,7 @@ app_angular.controller("pedidoController",['Conexion','$scope','$location','$htt
 
 		CRUD.select("select distinct  e.itemID,item.item_referencia,e.extencionDetalle1ID as talla,0 as cantidad,0  as multiplo,ext1_d.erp_descripcion_corta,sum(e.stock) as stock from erp_items_extenciones  e inner join erp_items item on item.rowid=e.itemID inner join  erp_item_extencion1_detalle ext1_d on ext1_d.rowid_erp=e.extencionDetalle1ID where e.itemID='"+$scope.item.rowid_item+"'  group by e.itemID,item.item_referencia,e.extencionDetalle1ID,ext1_d.erp_descripcion_corta order by ext1_d.erp_descripcion_corta ",function(elem){
 			//estado 0 inicia sin colores
-			elem.estadoextension2=0;
+			elem.estadoextension2=3;
 
 			elem.detalle2=[];
 			$scope.validaciones=true;
@@ -512,7 +521,7 @@ app_angular.controller("pedidoController",['Conexion','$scope','$location','$htt
 
 		if ($scope.banderaConsumo==1) {
 			$(".colores-add").attr("disabled","disabled");
-			CRUD.select("select*,0 as cantidad,'"+cantidad+"' as cantidadextension1 from erp_items_extenciones where itemID='"+item+"'  and  extencionDetalle1ID='"+talla+"' ",function(elem){
+			CRUD.select("select a.*,0 as cantidad,'"+cantidad+"' as cantidadextension1,d.rgba from erp_items_extenciones a inner join erp_item_extencion2_detalle d on d.rowid_erp=a.extencionDetalle2ID where itemID='"+item+"'  and  extencionDetalle1ID='"+talla+"'  order by a.extencionDetalle2ID ",function(elem){
 				$scope.itemextension2Detalle.push(elem);
 				$(".colores-add").removeAttr("disabled");
 			})	
@@ -752,7 +761,6 @@ app_angular.controller("pedidoController",['Conexion','$scope','$location','$htt
 				if (elem.item_custom1!='SI') {
 					elem.cantidadextension1=elem.cantidadextension1/12;
 				}
-				debugger
 				CRUD.select("select*,"+elem.cantidad+" as cantidad,'"+elem.cantidadextension1+"' as cantidadextension1 from erp_items_extenciones where itemID='"+elem.rowid_item+"'  and  extencionDetalle1ID='"+elem.item_ext1+"' ",function(colors){
 					
 					for (var i = 0;i<$scope.itemsAgregadosPedido.length;i++ ) {
@@ -1281,9 +1289,12 @@ app_angular.controller("pedidoController",['Conexion','$scope','$location','$htt
 
 	$scope.TallasGenerales=function()
 	{
+		$scope.ColorMasivoAnterior=[];
+		$scope.ColorMasivoAnterior=$scope.ColorMasivo.slice();
+		
 		$('#OpenModalColor').click();
 		if ($scope.ColorMasivo.length==0) {
-			CRUD.select("select distinct itemID,extencionDetalle2ID,0 as cantidad from erp_items_extenciones  where itemID='"+$scope.item.rowid_item+"' order by extencionDetalle2ID",function(elem){
+			CRUD.select("select distinct a.itemID,a.extencionDetalle2ID,0 as cantidad,d.rgba from erp_items_extenciones a inner join erp_item_extencion2_detalle d on d.rowid_erp=a.extencionDetalle2ID  where itemID='"+$scope.item.rowid_item+"' order by extencionDetalle2ID",function(elem){
 				$scope.ColorMasivo.push(elem);
 				
 			})		
@@ -1316,11 +1327,106 @@ app_angular.controller("pedidoController",['Conexion','$scope','$location','$htt
 			}
 		}
 	}
+	$scope.ItemModal=[];
+	$scope.ModalItem=function(item){
+		
+		$('#ColoresAgregados').click();
+		$scope.ItemModal=[];
+		$scope.ItemModal=item;
+	}
+	/*$scope.AgregarColoresMasivo=function()
+	{
+		
+		ProcesadoShow();
+		for (var i =0; i<$scope.tallas.length;i++ ) {
+
+			var CantidadBase=$scope.tallas[i].cantidad;
+			CRUD.selectAllinOne("select*,0 as cantidad,'"+CantidadBase+"' as cantidadextension1,"+i+" as  IndicadorArray from erp_items_extenciones where itemID='"+$scope.tallas[i].itemID+"'  and  extencionDetalle1ID='"+$scope.tallas[i].talla+"'  order by extencionDetalle2ID",function(elem){
+				
+				var CantidadTalla=0;
+				var InidicadorArray=0;
+				var ContadorColor=0;
+				var CantidadAnterior=0;
+				var ValidacionEstadoCompleto=true;
+
+				if (elem.length>0) {
+					InidicadorArray=elem[0].IndicadorArray;
+					CantidadTalla=elem[0].cantidadextension1;	
+				}
+				if ($scope.ColorMasivoAnterior.length>0) {
+					CantidadAnterior= $scope.tallasAnteriores[InidicadorArray].cantidad;
+				}
+				var Registro=[];
+				if ($scope.tallas[InidicadorArray].detalle2.length>0) {
+					Registro=$scope.tallas[InidicadorArray].detalle2;
+				}else
+				{
+					Registro=elem;
+				}
+				//RESTAR CANTIDADES ANTERIORES
+				for (var t =0;t< Registro.length;t++) {
+					for (var x=0;x<$scope.ColorMasivoAnterior.length;x++) {
+						if (Registro[t].extencionDetalle2ID==$scope.ColorMasivoAnterior[x].extencionDetalle2ID) {
+							if (CantidadAnterior % 1 == 0) {
+								Registro[t].cantidad-=$scope.ColorMasivoAnterior[x].cantidad*CantidadAnterior;
+							}
+							else
+							{
+								$scope.CantidadParcial=CantidadAnterior-0.5
+								Registro[t].cantidad-=$scope.ColorMasivoAnterior[x].cantidad*$scope.CantidadParcial;
+							}
+						}	
+					}
+				}
+				
+				//AGREGAR COLORES NUEVOS
+				for (var t =0;t< Registro.length;t++) {
+					//InidicadorArray=elem[t].IndicadorArray;
+					//CantidadTalla=elem[t].cantidadextension1;
+					for (var x=0;x<$scope.ColorMasivo.length;x++) {
+						if (Registro[t].extencionDetalle2ID==$scope.ColorMasivo[x].extencionDetalle2ID) {
+							if (CantidadTalla % 1 == 0) {
+								Registro[t].cantidad+=$scope.ColorMasivo[x].cantidad*CantidadTalla;
+								ContadorColor+=Registro[t].cantidad;
+							}
+							else
+							{
+								ValidacionEstadoCompleto=false;
+								var CantidadParcial=CantidadTalla-0.5
+								Registro[t].cantidad+=$scope.ColorMasivo[x].cantidad*CantidadParcial;
+								ContadorColor+=Registro[t].cantidad
+							}
+						}	
+					}
+				}
+				debugger
+				if (ContadorColor==(parseInt(CantidadTalla.toString())*12)) {
+					$scope.tallas[InidicadorArray].estadoextension2=1;
+				}
+				else
+				{
+					$scope.tallas[InidicadorArray].estadoextension2=2;	
+				}
+				ContadorColor=0;
+				if (CantidadTalla>0) {
+					$scope.tallas[InidicadorArray].detalle2=Registro;
+				}
+			})			
+		}	
+		setTimeout(function() {
+			ProcesadoHiden();
+			$scope.tallasAnteriores=[];	
+			$scope.tallasAnteriores=angular.copy($scope.tallas)	
+		}, 2000);
+		
+		
+		
+	}*/
 	$scope.AgregarColoresMasivo=function()
 	{
 		for (var i =0; i<$scope.tallas.length;i++ ) {
 			var CantidadBase=$scope.tallas[i].cantidad;
-			CRUD.selectAllinOne("select*,0 as cantidad,'"+CantidadBase+"' as cantidadextension1,"+i+" as  IndicadorArray from erp_items_extenciones where itemID='"+$scope.tallas[i].itemID+"'  and  extencionDetalle1ID='"+$scope.tallas[i].talla+"' ",function(elem){
+			CRUD.selectAllinOne("select a.*,0 as cantidad,'"+CantidadBase+"' as cantidadextension1,"+i+" as  IndicadorArray, d.rgba from erp_items_extenciones a inner join erp_item_extencion2_detalle d on d.rowid_erp=a.extencionDetalle2ID  where a.itemID='"+$scope.tallas[i].itemID+"'  and  a.extencionDetalle1ID='"+$scope.tallas[i].talla+"' order by extenciondetalle2id ",function(elem){
 				var CantidadTalla=0;
 				var InidicadorArray=0;
 				var ContadorColor=0;
@@ -1350,12 +1456,12 @@ app_angular.controller("pedidoController",['Conexion','$scope','$location','$htt
 					}
 					else
 					{
-						$scope.tallas[InidicadorArray].estadoextension2=0;	
+						$scope.tallas[InidicadorArray].estadoextension2=2;	
 					}
 				}
 				else
 				{
-						$scope.tallas[InidicadorArray].estadoextension2=0;
+						$scope.tallas[InidicadorArray].estadoextension2=2;
 				}
 				ContadorColor=0;
 				if (CantidadTalla>0) {

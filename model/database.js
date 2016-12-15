@@ -2637,6 +2637,10 @@ app_angular.service('Factory', function ($webSql) {
         "fechamodificacion": {
             "type": "text",
             "null": "NULL"
+        },
+        "rgba": {
+            "type": "text",
+            "null": "NULL"
         }
     })
 

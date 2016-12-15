@@ -258,6 +258,7 @@
     <form class="form-horizontal form-label-left" name="form_detalle" >
         <div class="form-group">
         </br>
+        
         <label for="rowid_item" class="control-label">Items<span class="required">*</span></label>
         <div class="form-group">
             <div class="row " style="display:none">
@@ -325,7 +326,7 @@
             </td>
             <td>
                 <button class="btn btn-success colores-add"  ng-click="openModalDetalle2(tallas.itemID,tallas.talla,tallas.cantidad)"><span class="fa fa-plus"></span></button>
-                <span class="fa fa-exclamation-triangle" style="color:#FF0040"  ng-hide="tallas.estadoextension2==1"></span>
+                <span class="fa fa-exclamation-triangle" style="color:#FF0040"  ng-show="tallas.estadoextension2==2"></span>
                 <span class="fa fa-check-circle" style="color:#2F9B89" ng-show="tallas.estadoextension2==1"></span>
             </td>
             <!--<td>
@@ -378,17 +379,17 @@
                 <th class="column-title">Accion</th>
             </thead>
             <tbody>
-                <tr ng-repeat="items in itemsAgregadosPedido">
-                         <td>
+                <tr ng-repeat="items in itemsAgregadosPedido" >
+                         <td ng-click="ModalItem(items)">
                              {{items.item_referencia1}}
                          </td>
-                         <td ng-repeat="talla in items.tallas">
+                         <td ng-repeat="talla in items.tallas" ng-click="ModalItem(items)">
                             <center>
                                 {{talla.cantidad1}}
                             </center>
                         </td>
-                        <td>{{items.cantidad}}</td>
-                        <td>{{items.empaqueshow}}</td>
+                        <td ng-click="ModalItem(items)">{{items.cantidad}}</td>
+                        <td ng-click="ModalItem(items)">{{items.empaqueshow}}</td>
                         <td>
                          <span class="fa fa-pencil btn btn-success" ng-click="editItem(items,$index)" style="font-size:.7em; width:30px;"></span>
                          <span class="fa fa-trash-o btn btn-danger" ng-click="delete($index)" style="font-size:.7em; width:30px;"></span>
@@ -528,10 +529,12 @@
                                     <tr>
                                         <td>Color</td>
                                         <td>Cantidad</td>
+                                         <td></td>
                                         <td>Stock</td>
                                     </tr>
-                                    <tr ng-repeat="extension in itemextension2Detalle">
+                                    <tr ng-repeat="extension in itemextension2Detalle" style="height:5px">
                                         <td>{{extension.extencionDetalle2ID}}</td>
+                                        
                                         <td>
                                              <div class=" input-group" style="max-width:160px"  >
                                                 <span class="input-group-btn"  ng-click="adicionarCantidadDetalle2(extension.extencionDetalle2ID,'restar',extension.stock,extension.cantidadextension1)">
@@ -549,6 +552,10 @@
                                                     </button>
                                                 </span>
                                             </div>
+                                        </td>
+                                        <td style="border: 1px solid #b6b6b6;background:{{extension.rgba}};">
+                                            
+                                            
                                         </td>
                                         <td>{{extension.stock}}</td>
                                     </tr>
@@ -581,10 +588,13 @@
                                 <table class="table">
                                     <tr>
                                         <td>Color</td>
+                                       
                                         <td>Cantidad</td>
+                                         <td></td>
                                     </tr>
                                     <tr ng-repeat="extension in ColorMasivo">
                                         <td>{{extension.extencionDetalle2ID}}</td>
+                                        
                                         <td>
                                              <div class=" input-group" style="max-width:160px"  >
                                                 <span class="input-group-btn"  ng-click="adicionarCantidadColor(extension.extencionDetalle2ID,'RESTAR')">
@@ -603,6 +613,10 @@
                                                 </span>
                                             </div>
                                         </td>
+                                        <td style="border: 1px solid #b6b6b6;background:{{extension.rgba}};">
+                                            
+                                            
+                                        </td>
                                     </tr>
                                 </table>
                             </form>
@@ -617,4 +631,67 @@
         </div>
         
         <div id="OpenModalColor" data-toggle="modal" data-target="#ColoresMasivoModal"></div>
+
+        <div id="Modalcolores" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-keyboard="false" data-backdrop="static">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title" id="">Detalle Item</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div id="testmodal" style="padding: 0px;">
+                            <form id="antoform" class="form-horizontal calender form-label-left" role="form">
+                                <div class="row" style="margin: 0px">
+                                    <div class="form-group col-md-12" style="margin: 1px">
+                                         <label>
+                                        Item: <strong>{{ItemModal.descipcion}}</strong> 
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="row" style="margin: 0px">
+                                    <div class="form-group col-md-4" style="margin: 1px">
+                                        <label>
+                                        Referencia: <strong>{{ItemModal.item_referencia1}}</strong> 
+                                        </label>
+                                    </div>
+                                    <div class="form-group col-md-4" style="margin: 1px">
+                                        <label>
+                                        Empaque: <strong>{{ItemModal.empaque}}</strong> 
+                                        </label>
+                                    </div>
+                                    <div class="form-group col-md-4" style="margin: 1px">
+                                        <label>
+                                        Cantidad: <strong>{{ItemModal.cantidad}}</strong> 
+                                        </label>
+                                    </div>
+                                </div>
+                                <div ng-repeat="item in ItemModal.tallas" ng-show="item.cantidad>0">
+
+                                    <strong> Talla : {{item.talla}}</strong>
+                                    <div style="overflow-x:auto;" class="table-resposive" >
+                                    <table class="table table-striped responsive-utilities jambo_table bulk_action">
+                                        <tr>
+                                            <td ng-repeat="color in item.detalle2" ng-show="{{color.cantidad>0}}" style="border: 1px solid #b6b6b6;background:{{color.rgba}};" ></td>
+                                        </tr>
+                                        <tr>
+                                            <td ng-repeat="color in item.detalle2"  ng-show="{{color.cantidad>0}}">{{color.extencionDetalle2ID}} </td>
+                                        </tr>
+                                        <tr>
+                                            <td ng-repeat="color in item.detalle2"  ng-show="{{color.cantidad>0}}">{{color.cantidad}} </td>
+                                        </tr>
+                                    </table>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                    <button type="button" class="btn btn-danger antoclose" style="margin:0px"  data-dismiss="modal">Salir</button>
+                    <button type="button" class="btn btn-success antoclose"  ng-click="AgregarColoresMasivo()"  data-dismiss="modal">Confirmar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div id="ColoresAgregados" data-toggle="modal" data-target="#Modalcolores"></div>
     </div>
