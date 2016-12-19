@@ -154,6 +154,10 @@ app_angular.controller("pedidoController",['Conexion','$scope','$location','$htt
 						$scope.tallas[i].cantidad+=0.5;	
 						$scope.tallas[i].multiplo++;
 						$scope.Validarstock=$scope.tallas[i].cantidad*12;
+						debugger
+						if ($scope.tallas[i].cantidad%1==0) {
+							$scope.AgregarColoresMasivo();
+						}
 						//if ($scope.Validarstock>stock) {
 						//	$scope.tallas[i].cantidad-=0.5;	
 						//	$scope.tallas[i].multiplo--;
@@ -163,6 +167,7 @@ app_angular.controller("pedidoController",['Conexion','$scope','$location','$htt
 						$scope.tallas[i].cantidad+=1;	
 						$scope.tallas[i].multiplo++;
 						$scope.Validarstock=$scope.tallas[i].cantidad;
+
 						//if ($scope.Validarstock>stock) {
 						//	$scope.tallas[i].cantidad-=1;	
 						//	$scope.tallas[i].multiplo--;
@@ -1424,6 +1429,9 @@ app_angular.controller("pedidoController",['Conexion','$scope','$location','$htt
 	}*/
 	$scope.AgregarColoresMasivo=function()
 	{
+		if ($scope.ColorMasivo.length==0) {
+			return
+		}
 		for (var i =0; i<$scope.tallas.length;i++ ) {
 			var CantidadBase=$scope.tallas[i].cantidad;
 			CRUD.selectAllinOne("select a.*,0 as cantidad,'"+CantidadBase+"' as cantidadextension1,"+i+" as  IndicadorArray, d.rgba from erp_items_extenciones a inner join erp_item_extencion2_detalle d on d.rowid_erp=a.extencionDetalle2ID  where a.itemID='"+$scope.tallas[i].itemID+"'  and  a.extencionDetalle1ID='"+$scope.tallas[i].talla+"' order by extenciondetalle2id ",function(elem){
@@ -1456,12 +1464,24 @@ app_angular.controller("pedidoController",['Conexion','$scope','$location','$htt
 					}
 					else
 					{
-						$scope.tallas[InidicadorArray].estadoextension2=2;	
+						if (CantidadTalla==0) {
+							$scope.tallas[InidicadorArray].estadoextension2=3;	
+						}else
+						{
+							$scope.tallas[InidicadorArray].estadoextension2=2;		
+						}
+						
 					}
 				}
 				else
 				{
-						$scope.tallas[InidicadorArray].estadoextension2=2;
+						if (CantidadTalla==0) {
+							$scope.tallas[InidicadorArray].estadoextension2=3;	
+						}else
+						{
+							$scope.tallas[InidicadorArray].estadoextension2=2;	
+						}
+						
 				}
 				ContadorColor=0;
 				if (CantidadTalla>0) {
