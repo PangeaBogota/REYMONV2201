@@ -1033,7 +1033,7 @@ app_angular.controller("pedidoController",['Conexion','$scope','$location','$htt
 	}
 	$scope.editItem=function(item,index){
 		$scope.filter.descripcionitem=item.item_referencia1;
-		$scope.onChangeListaPrecios();
+		//$scope.onChangeListaPrecios();
 		$scope.bandera.banderaEditar=true;
 		$scope.bandera.banderaEditarDelete=index;
 		$scope.bandera.itemEdit=item;
@@ -1469,19 +1469,17 @@ app_angular.controller("pedidoController",['Conexion','$scope','$location','$htt
 						}else
 						{
 							$scope.tallas[InidicadorArray].estadoextension2=2;		
-						}
-						
+						}	
 					}
 				}
 				else
 				{
-						if (CantidadTalla==0) {
-							$scope.tallas[InidicadorArray].estadoextension2=3;	
-						}else
-						{
-							$scope.tallas[InidicadorArray].estadoextension2=2;	
-						}
-						
+					if (CantidadTalla==0) {
+						$scope.tallas[InidicadorArray].estadoextension2=3;	
+					}else
+					{
+						$scope.tallas[InidicadorArray].estadoextension2=2;	
+					}
 				}
 				ContadorColor=0;
 				if (CantidadTalla>0) {
