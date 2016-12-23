@@ -115,8 +115,11 @@ app_angular.controller("pedidoController",['Conexion','$scope','$location','$htt
 
 				if ($scope.tallas[i].talla==talla) {
 					if ($scope.tallas[i].cantidad==0) {
+						$scope.tallas[i].detalle2=[];
+						$scope.AgregarColoresMasivoTalla(talla);
 						return
 					}
+					
 					//if ($scope.tallas[i].detalle2.length>0) {
 						//Mensajes('No puedes disminuir la cantidad con Colores Asignados','error','')
 					//	$('#confirmacioncolores').click();
@@ -139,7 +142,10 @@ app_angular.controller("pedidoController",['Conexion','$scope','$location','$htt
 					{
 						$scope.tallas[i].estadoextension2=2;	
 					}
-					
+					if ($scope.tallas[i].cantidad%1==0) {
+						
+						$scope.AgregarColoresMasivoTalla(talla);
+					}
 				}
 			
 			}

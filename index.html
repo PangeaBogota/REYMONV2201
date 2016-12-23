@@ -391,6 +391,33 @@
                         </div>
                     </div>
                     <div id="openConfirmacion" data-toggle="modal" data-target="#modalConfirmacion"></div>
+                     <div id="modalCerrarSesion" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" >
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                                    <h4 class="modal-title" id="myModalLabel">Confirmacion Cierre Sesion</h4>
+                                </div>
+                                <div class="modal-body">
+                                    <div id="testmodal" style="padding: 0px;">
+                                        <form id="antoform" class="form-horizontal calender form-label-left" role="form">
+                                            <div class="row form-group">
+                                                <div class="col-md-12">
+                                                     Desea Cerrar Sesion
+                                                </div>
+                                            </div>
+                                            
+                                        </form>
+                                    </div>
+                                </div>
+                                <div class="modal-footer" >
+                                    <button type="button" class="btn btn-danger antoclose" data-dismiss="modal" style="margin:5px"  >Permanecer</button>
+                                    <button type="button"  class="btn btn-primary antoclose " ng-click="confimarCerrarSion()" data-dismiss="modal" style="margin:5px" >Cerrar Sesion</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="openModalLogOut" data-toggle="modal" data-target="#modalCerrarSesion"></div>
                     <div class="nav_menu">
                         <nav class="" role="navigation">
 
@@ -411,7 +438,7 @@
                                                 <span>Sincronizar</span>
                                             </a>
                                         </li>
-                                        <li><a href="login.html"><i class="fa fa-sign-out pull-right"></i>Cerrar Sesion</a>
+                                        <li><a ng-click="cerrarsesion()"><i class="fa fa-sign-out pull-right"></i>Cerrar Sesion</a>
                                         </li>
                                     </ul>
                                 </li>

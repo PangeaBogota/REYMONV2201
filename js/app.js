@@ -78,7 +78,15 @@ app_angular.controller('sessionController',['bootbox','Conexion','$scope','$loca
         $('#openConfirmacion').click();
         
     }
-
+    $scope.cerrarsesion=function(){
+        
+        $('#openModalLogOut').click();
+        
+    }
+    $scope.confimarCerrarSion=function()
+    {
+        location.href="login.html"        
+    }
     $scope.envioInformacion=function(){
         
         $scope.usuario=$scope.sessiondate.nombre_usuario;
@@ -99,7 +107,7 @@ app_angular.controller('sessionController',['bootbox','Conexion','$scope','$loca
                                 var pedidosJSON=JSON.stringify($scope.informacion.pedido);
                                 var itemJSON=JSON.stringify($scope.informacion.item);
                                 var subItemJSON=JSON.stringify($scope.informacion.subitem);
-                                debugger
+                                
                                 $http({
                                   method: 'post',
                                   url: 'http://localhost:45091/Mobile/SyncInfoMobile',
