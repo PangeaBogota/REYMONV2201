@@ -112,6 +112,7 @@ app_angular.controller("pedidoController",['Conexion','$scope','$location','$htt
 	}
 	$scope.cantidadTalla=function(talla,accion,stock)
 	{
+		debugger
 		if (accion=="restar") {
 			for (var i = 0;i<$scope.tallas.length;i++) {
 
@@ -144,7 +145,7 @@ app_angular.controller("pedidoController",['Conexion','$scope','$location','$htt
 					{
 						$scope.tallas[i].estadoextension2=2;	
 					}
-					if ($scope.tallas[i].cantidad%1==0) {
+					if ($scope.tallas[i].cantidad>0) {
 						
 						$scope.AgregarColoresMasivoTalla(talla);
 					}
@@ -821,18 +822,23 @@ app_angular.controller("pedidoController",['Conexion','$scope','$location','$htt
 		}
 	}
 	$scope.$on('$routeChangeStart', function(event,next, current) { 
+		debugger
 		if ($scope.ModalColorMasivo==true) {
 			$scope.ModalColorMasivo=false
 			$scope.AgregarColoresMasivo();
+			$('#ModalMasivo').click();
+			event.preventDefault();
 			return;
 		}
 		if ($scope.ModalColorOpen==true) 
 		{
-			agregarColoresTalla();
+			$scope.agregarColoresTalla();
 			$scope.ModalColorOpen=false;
+			event.preventDefault();
 			$('#CerrarModalColores').click();
 			return;
 		}
+
 		if ($scope.confimar.salir==false) {
 			$scope.confimar.next=next;
 			  $scope.confimar.current=current
@@ -1607,7 +1613,7 @@ app_angular.controller("PedidosController",['Conexion','$scope','$route',functio
 	$scope.cargarLista=function()
 	{
 		$scope.pedidos=[];
-		CRUD.select('select distinct pedidos.sincronizado,pedidos.valor_impuesto,pedidos.fecha_solicitud,pedidos.sincronizado, pedidos.rowid as rowidpedido,terceros.razonsocial,sucursal.nombre_sucursal,punto_envio.nombre_punto_envio,pedidos.valor_total,detalle.rowid_pedido,count(detalle.rowid_pedido) cantidaddetalles,sum(detalle.cantidad) as cantidadproductos,pedidos.numpedido_erp,pedidos.estado_erp from  t_pedidos pedidos inner join erp_terceros_sucursales sucursal on sucursal.rowid=pedidos.rowid_cliente_facturacion  inner join erp_terceros terceros on terceros.rowid=sucursal.rowid_tercero  left  join t_pedidos_detalle detalle on detalle.rowid_pedido=pedidos.rowid left join erp_terceros_punto_envio punto_envio on punto_envio.rowid=pedidos.id_punto_envio where (pedidos.sincronizado!="true")  and pedidos.usuariocreacion="'+$scope.sessiondate.nombre_usuario+'" group by  pedidos.fecha_solicitud,detalle.rowid_pedido,pedidos.rowid,terceros.razonsocial,sucursal.nombre_sucursal,punto_envio.nombre_punto_envio,pedidos.valor_total order by pedidos.rowid desc    LIMIT 50',
+		CRUD.select('select distinct pedidos.sincronizado,pedidos.valor_impuesto,pedidos.fecha_solicitud,pedidos.sincronizado, pedidos.rowid as rowidpedido,terceros.razonsocial,sucursal.nombre_sucursal,punto_envio.nombre_punto_envio,pedidos.valor_total,detalle.rowid_pedido,count(detalle.rowid_pedido) cantidaddetalles,sum(detalle.cantidad) as cantidadproductos,pedidos.numpedido_erp,pedidos.estado_erp from  t_pedidos pedidos inner join erp_terceros_sucursales sucursal on sucursal.rowid=pedidos.rowid_cliente_facturacion  inner join erp_terceros terceros on terceros.rowid=sucursal.rowid_tercero  left  join t_pedidos_detalle detalle on detalle.rowid_pedido=pedidos.rowid left join erp_terceros_punto_envio punto_envio on punto_envio.rowid=pedidos.id_punto_envio where   pedidos.usuariocreacion="'+$scope.sessiondate.nombre_usuario+'" group by  pedidos.fecha_solicitud,detalle.rowid_pedido,pedidos.rowid,terceros.razonsocial,sucursal.nombre_sucursal,punto_envio.nombre_punto_envio,pedidos.valor_total order by pedidos.rowid desc    LIMIT 50',
 			function(elem) {elem.tablamobile=1;$scope.pedidos.push(elem)});
 		window.setTimeout(function() {
 			CRUD.select('select distinct pedidos.sincronizado,pedidos.valor_impuesto,pedidos.fecha_solicitud,pedidos.sincronizado, pedidos.rowid as rowidpedido,terceros.razonsocial,sucursal.nombre_sucursal,punto_envio.nombre_punto_envio,pedidos.valor_total,detalle.rowid_pedido,count(detalle.rowid_pedido) cantidaddetalles,sum(detalle.cantidad) as cantidadproductos,pedidos.numpedido_erp,pedidos.estado_erp from  t_pedidos_web pedidos inner join erp_terceros_sucursales sucursal on sucursal.rowid=pedidos.rowid_cliente_facturacion  inner join erp_terceros terceros on terceros.rowid=sucursal.rowid_tercero  left  join t_pedidos_detalle_web detalle on detalle.rowid_pedido=pedidos.rowid left join erp_terceros_punto_envio punto_envio on punto_envio.rowid=pedidos.id_punto_envio where pedidos.usuariocreacion="'+$scope.sessiondate.nombre_usuario+'"  group by  pedidos.fecha_solicitud,detalle.rowid_pedido,pedidos.rowid,terceros.razonsocial,sucursal.nombre_sucursal,punto_envio.nombre_punto_envio,pedidos.valor_total order by pedidos.rowid desc    LIMIT 50',
