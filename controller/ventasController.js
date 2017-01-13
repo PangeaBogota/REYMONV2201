@@ -46,6 +46,7 @@ app_angular.controller("pedidoController",['Conexion','$scope','$location','$htt
 	$scope.list_pedidos_detalles=[];
 	$scope.valorTotal;
 	$scope.ModalColorOpen=false;
+	$scope.ModalColorMasivo=false;
 	$scope.sucursalDespacho=[];
 	$scope.ciudadSucursal=[];
 	$scope.puntoEnvio=[];
@@ -820,7 +821,10 @@ app_angular.controller("pedidoController",['Conexion','$scope','$location','$htt
 		}
 	}
 	$scope.$on('$routeChangeStart', function(event,next, current) { 
-		if ($scope.ModalColorOpen=true) 
+		if ($scope.ModalColorMasivo==true) {
+			$scope.ModalColorMasivo=false
+		}
+		if ($scope.ModalColorOpen==true) 
 		{
 			agregarColoresTalla();
 			$scope.ModalColorOpen=false;
@@ -1309,6 +1313,7 @@ app_angular.controller("pedidoController",['Conexion','$scope','$location','$htt
 
 	$scope.TallasGenerales=function()
 	{
+		$scope.ModalColorMasivo=true;
 		$scope.ColorMasivoAnterior=[];
 		$scope.ColorMasivoAnterior=$scope.ColorMasivo.slice();
 		
@@ -1516,6 +1521,7 @@ app_angular.controller("pedidoController",['Conexion','$scope','$location','$htt
 	}
 	$scope.AgregarColoresMasivoTalla=function(TallaChange)
 	{
+		$scope.ModalColorMasivo=false;
 		if ($scope.ColorMasivo.length==0) {
 			return;
 		}
