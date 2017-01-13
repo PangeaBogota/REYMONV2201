@@ -128,6 +128,7 @@ app_angular.controller("actividadesController",['Conexion','$scope', '$routePara
 		$('#fc_create').click();
 	}
 	$scope.guardarActividad=function(){
+		debugger
 		$scope.ultimoRegistro=[];
 		CRUD.select('select max(rowid) as rowid from crm_actividades',function(elem){
 			$scope.NuevoEvento.rowid=elem.rowid+1;
@@ -141,7 +142,7 @@ app_angular.controller("actividadesController",['Conexion','$scope', '$routePara
 			$scope.NuevoEvento=[];
 			$scope.RefrescarVista();
 		})
-        $('.antoclose').click();
+        $('#CerrarModalActiviadad').click();
         Mensajes('Actividad Nueva Creada','success','');
         
 	}

@@ -45,6 +45,7 @@ app_angular.controller("pedidoController",['Conexion','$scope','$location','$htt
 	$scope.pedido_detalle=[];
 	$scope.list_pedidos_detalles=[];
 	$scope.valorTotal;
+	$scope.ModalColorOpen=false;
 	$scope.sucursalDespacho=[];
 	$scope.ciudadSucursal=[];
 	$scope.puntoEnvio=[];
@@ -162,7 +163,7 @@ app_angular.controller("pedidoController",['Conexion','$scope','$location','$htt
 						$scope.Validarstock=$scope.tallas[i].cantidad*12;
 						debugger
 						if ($scope.tallas[i].cantidad%1==0) {
-							$scope.AgregarColoresMasivoTalla(talla);
+							
 						}
 						//if ($scope.Validarstock>stock) {
 						//	$scope.tallas[i].cantidad-=0.5;	
@@ -180,6 +181,7 @@ app_angular.controller("pedidoController",['Conexion','$scope','$location','$htt
 						//	Mensajes("La Cantidad no puede ser mayor al stock","error","");
 						//}
 					}
+					$scope.AgregarColoresMasivoTalla(talla);
 					$scope.tallas[i].estadoextension2=2;
 					
 				}
@@ -531,10 +533,10 @@ app_angular.controller("pedidoController",['Conexion','$scope','$location','$htt
 		}
 
 		if ($scope.banderaConsumo==1) {
-			$(".colores-add").attr("disabled","disabled");
+			//$(".colores-add").attr("disabled","disabled");
 			CRUD.select("select a.*,0 as cantidad,'"+cantidad+"' as cantidadextension1,d.rgba from erp_items_extenciones a inner join erp_item_extencion2_detalle d on d.rowid_erp=a.extencionDetalle2ID where itemID='"+item+"'  and  extencionDetalle1ID='"+talla+"'  order by a.extencionDetalle2ID ",function(elem){
 				$scope.itemextension2Detalle.push(elem);
-				$(".colores-add").removeAttr("disabled");
+				//$(".colores-add").removeAttr("disabled");
 			})	
 		}
 
@@ -561,6 +563,7 @@ app_angular.controller("pedidoController",['Conexion','$scope','$location','$htt
 
 			}
 		}
+		$scope.ModalColorOpen=false;
 	}
 	$scope.adicionarCantidadDetalle2=function(extension,accion,stock,cantidad){
 		
@@ -647,7 +650,7 @@ app_angular.controller("pedidoController",['Conexion','$scope','$location','$htt
 
 		$scope.consultaDetalle2(item,talla,cantidad);
 		
-		
+		$scope.ModalColorOpen=true;
 		$('#extension2').click();
 
 		
@@ -817,6 +820,12 @@ app_angular.controller("pedidoController",['Conexion','$scope','$location','$htt
 		}
 	}
 	$scope.$on('$routeChangeStart', function(event,next, current) { 
+		if ($scope.ModalColorOpen=true) 
+		{
+			agregarColoresTalla();
+			$scope.ModalColorOpen=false;
+			$('#CerrarModalColores').click();
+		}
 		if ($scope.confimar.salir==false) {
 			$scope.confimar.next=next;
 			  $scope.confimar.current=current
@@ -1445,9 +1454,11 @@ app_angular.controller("pedidoController",['Conexion','$scope','$location','$htt
 				var InidicadorArray=0;
 				var ContadorColor=0;
 				var ValidacionEstadoCompleto=true;
-				for (var t =0;t< elem.length;t++) {
-					InidicadorArray=elem[t].IndicadorArray;
-					CantidadTalla=elem[t].cantidadextension1;
+				if (elem.length>0) {
+					InidicadorArray=elem[0].IndicadorArray;
+					CantidadTalla=elem[0].cantidadextension1;	
+					for (var t =0;t< elem.length;t++) {
+					
 					for (var x=0;x<$scope.ColorMasivo.length;x++) {
 						if (elem[t].extencionDetalle2ID==$scope.ColorMasivo[x].extencionDetalle2ID) {
 							if (CantidadTalla % 1 == 0) {
@@ -1464,7 +1475,12 @@ app_angular.controller("pedidoController",['Conexion','$scope','$location','$htt
 						}	
 					}
 				}
+				if (CantidadTalla>0) {
+					$scope.tallas[InidicadorArray].detalle2=elem;
+				}
+				debugger
 				if (CantidadTalla % 1 == 0 && CantidadTalla>0 && ValidacionEstadoCompleto) {
+					
 					if (ContadorColor==(parseInt(CantidadTalla.toString())*12)) {
 						$scope.tallas[InidicadorArray].estadoextension2=1;
 					}
@@ -1480,17 +1496,20 @@ app_angular.controller("pedidoController",['Conexion','$scope','$location','$htt
 				}
 				else
 				{
-					if (CantidadTalla==0) {
+
+					if (CantidadTalla==0 && $scope.tallas[InidicadorArray].cantidad==0) {
 						$scope.tallas[InidicadorArray].estadoextension2=3;	
 					}else
 					{
 						$scope.tallas[InidicadorArray].estadoextension2=2;	
 					}
 				}
-				ContadorColor=0;
-				if (CantidadTalla>0) {
-					$scope.tallas[InidicadorArray].detalle2=elem;
+				
 				}
+				ContadorColor=0;
+				
+
+				
 				
 			})			
 		}
@@ -1501,13 +1520,13 @@ app_angular.controller("pedidoController",['Conexion','$scope','$location','$htt
 			return;
 		}
 		for (var i =0; i<$scope.tallas.length;i++ ) {
-			debugger
 			var CantidadBase=$scope.tallas[i].cantidad;
 			if ($scope.tallas[i].talla!=TallaChange) {
 				continue;
 			}
 			CRUD.selectAllinOne("select a.*,0 as cantidad,'"+CantidadBase+"' as cantidadextension1,"+i+" as  IndicadorArray, d.rgba from erp_items_extenciones a inner join erp_item_extencion2_detalle d on d.rowid_erp=a.extencionDetalle2ID  where a.itemID='"+$scope.tallas[i].itemID+"'  and  a.extencionDetalle1ID='"+$scope.tallas[i].talla+"' order by extenciondetalle2id ",function(elem){
-				var CantidadTalla=0;
+				if (elem.length>0) {
+					var CantidadTalla=0;
 				var InidicadorArray=0;
 				var ContadorColor=0;
 				var ValidacionEstadoCompleto=true;
@@ -1530,6 +1549,7 @@ app_angular.controller("pedidoController",['Conexion','$scope','$location','$htt
 						}	
 					}
 				}
+
 				if (CantidadTalla % 1 == 0 && CantidadTalla>0 && ValidacionEstadoCompleto) {
 					if (ContadorColor==(parseInt(CantidadTalla.toString())*12)) {
 						$scope.tallas[InidicadorArray].estadoextension2=1;
@@ -1556,7 +1576,9 @@ app_angular.controller("pedidoController",['Conexion','$scope','$location','$htt
 				ContadorColor=0;
 				if (CantidadTalla>0) {
 					$scope.tallas[InidicadorArray].detalle2=elem;
+				}	
 				}
+				
 				
 			})			
 		}
