@@ -823,12 +823,15 @@ app_angular.controller("pedidoController",['Conexion','$scope','$location','$htt
 	$scope.$on('$routeChangeStart', function(event,next, current) { 
 		if ($scope.ModalColorMasivo==true) {
 			$scope.ModalColorMasivo=false
+			$scope.AgregarColoresMasivo();
+			return;
 		}
 		if ($scope.ModalColorOpen==true) 
 		{
 			agregarColoresTalla();
 			$scope.ModalColorOpen=false;
 			$('#CerrarModalColores').click();
+			return;
 		}
 		if ($scope.confimar.salir==false) {
 			$scope.confimar.next=next;
@@ -1449,6 +1452,7 @@ app_angular.controller("pedidoController",['Conexion','$scope','$location','$htt
 	}*/
 	$scope.AgregarColoresMasivo=function()
 	{
+		$scope.ModalColorMasivo=false;
 		if ($scope.ColorMasivo.length==0) {
 			return
 		}
@@ -1521,7 +1525,7 @@ app_angular.controller("pedidoController",['Conexion','$scope','$location','$htt
 	}
 	$scope.AgregarColoresMasivoTalla=function(TallaChange)
 	{
-		$scope.ModalColorMasivo=false;
+		
 		if ($scope.ColorMasivo.length==0) {
 			return;
 		}
