@@ -268,6 +268,7 @@ app_angular.controller("pedidoController",['Conexion','$scope','$location','$htt
 	
 	
 	$scope.stringConsultaItems=function(parm1){
+		debugger
 		var count='';
 		var vista='';
 		if (parm1.pC==1) {
@@ -284,7 +285,7 @@ app_angular.controller("pedidoController",['Conexion','$scope','$location','$htt
 				count="select count(*) as cantidadfrom vw_items_precios  where  rowid="+$scope.pedidos.rowid_lista_precios+"  and  item_codigo1 like '%"+$scope.filter.codigoitem+"%' and (tipo_inventario = '"+parm1.p1+"') and    (   item_referencia1 like '%"+$scope.filter.descripcionitem+"%'   or descripcion like '%"+$scope.filter.descripcionitem+"%' )    order by rowid ";
 			}
 			else {
-				vista="select*from vw_items_precios  where  rowid="+$scope.pedidos.rowid_lista_precios+" and (tipo_inventario = '"+parm1.p1+"')  order by rowid LIMIT 100 ";
+				vista="select*from vw_items_precios  where  rowid="+$scope.pedidos.rowid_lista_precios+" and (tipo_inventario = '"+parm1.p1+"')  order by rowid ";
 				count="select 100 as cantidad ";
 			}
 		}
@@ -302,7 +303,7 @@ app_angular.controller("pedidoController",['Conexion','$scope','$location','$htt
 				count="select count(*) as cantidadfrom vw_items_precios  where  rowid="+$scope.pedidos.rowid_lista_precios+"  and  item_codigo1 like '%"+$scope.filter.codigoitem+"%' and   (   item_referencia1 like '%"+$scope.filter.descripcionitem+"%'   or descripcion like '%"+$scope.filter.descripcionitem+"%' )  and    (tipo_inventario = '"+parm1.p1+"'  or  tipo_inventario = '"+parm1.p2+"')   order by rowid ";
 			}
 			else {
-				vista="select*from vw_items_precios  where  rowid="+$scope.pedidos.rowid_lista_precios+"  order by rowid LIMIT 100 ";
+				vista="select*from vw_items_precios  where  rowid="+$scope.pedidos.rowid_lista_precios+"  order by rowid ";
 				count="select 100 as cantidad ";
 			}
 		}
